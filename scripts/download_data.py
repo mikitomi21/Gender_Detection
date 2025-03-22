@@ -56,17 +56,18 @@ class DataDownloader:
     def _download_babies_images(skip_if_exists: bool):
         BABIES_DATASET = "frabbisw/facial-age"
         RAW_DATA_PATH = Path(__file__).parent.parent / "data" / "raw"
+        PROCESSED_DATA_PATH = Path(__file__).parent.parent / "data" / "processed"
         BABIES_DATA_PATH = RAW_DATA_PATH / "babies"
         FACE_AGE_DATA_PATH = RAW_DATA_PATH / "face_age"
 
-        if skip_if_exists and any(file.is_file() for file in BABIES_DATA_PATH.iterdir()):
+        if skip_if_exists and any(
+            file.is_file() for file in BABIES_DATA_PATH.iterdir()
+        ):
             print(f"🙈 Dataset '{BABIES_DATASET}' is already downloaded.")
             return
 
         kaggle.api.dataset_download_files(
-            dataset=BABIES_DATASET,
-            path=str(RAW_DATA_PATH),
-            unzip=True
+            dataset=BABIES_DATASET, path=str(RAW_DATA_PATH), unzip=True
         )
 
         selected_years = ["001", "002", "003", "004"]
@@ -75,9 +76,24 @@ class DataDownloader:
             for file in baby_year.iterdir():
                 shutil.copy(file, BABIES_DATA_PATH)
 
+        number_of_images = len(
+            [file for file in BABIES_DATA_PATH.iterdir() if file.is_file()]
+        )
+        TRAIN_SIZE = int(number_of_images * 2 / 3)
+        TEST_SIZE = int((number_of_images - TRAIN_SIZE) / 2)
+        for i, file in enumerate(BABIES_DATA_PATH.iterdir()):
+            if i <= TRAIN_SIZE:
+                shutil.copy(file, PROCESSED_DATA_PATH / "train" / "babies")
+            elif TRAIN_SIZE < i < TRAIN_SIZE + TEST_SIZE:
+                shutil.copy(file, PROCESSED_DATA_PATH / "test" / "babies")
+            else:
+                shutil.copy(file, PROCESSED_DATA_PATH / "val" / "babies")
+
         shutil.rmtree(FACE_AGE_DATA_PATH)
 
-        print(f"✅ Dataset '{BABIES_DATASET}' downloaded to directory: {str(BABIES_DATA_PATH)}")
+        print(
+            f"✅ Dataset '{BABIES_DATASET}' downloaded to directory: {str(BABIES_DATA_PATH)}"
+        )
 
     @staticmethod
     def _download_genders_images(skip_if_exists: bool):
@@ -90,9 +106,7 @@ class DataDownloader:
             return
 
         kaggle.api.dataset_download_files(
-            dataset=GENDERS_DATASET,
-            path=str(PROCESSED_DATA_PATH),
-            unzip=True
+            dataset=GENDERS_DATASET, path=str(PROCESSED_DATA_PATH), unzip=True
         )
 
         temp_dir = PROCESSED_DATA_PATH / "Dataset"
@@ -104,7 +118,7 @@ class DataDownloader:
             ["Validation/Male", "val/men"],
             ["Validation/Female", "val/women"],
         ]
-        for (src_dir, dst_dir) in common_dirs:
+        for src_dir, dst_dir in common_dirs:
             full_src_dir = temp_dir / src_dir
             full_dst_dir = PROCESSED_DATA_PATH / dst_dir
             for file in full_src_dir.iterdir():
@@ -112,7 +126,9 @@ class DataDownloader:
 
         shutil.rmtree(temp_dir)
 
-        print(f"✅ Dataset '{GENDERS_DATASET}' downloaded to directory: {str(PROCESSED_DATA_PATH)}")
+        print(
+            f"✅ Dataset '{GENDERS_DATASET}' downloaded to directory: {str(PROCESSED_DATA_PATH)}"
+        )
 
     @staticmethod
     def _download_none_images(skip_if_exists: bool):
@@ -125,17 +141,15 @@ class DataDownloader:
             return
 
         kaggle.api.dataset_download_files(
-            dataset=NONE_DATASET,
-            path=str(PROCESSED_DATA_PATH),
-            unzip=True
+            dataset=NONE_DATASET, path=str(PROCESSED_DATA_PATH), unzip=True
         )
 
         temp_dir = PROCESSED_DATA_PATH / "wm-nowm"
         common_dirs = [
             ["train/no-watermark", "train/none"],
-            ["valid/no-watermark", "val/none"]
+            ["valid/no-watermark", "val/none"],
         ]
-        for (src_dir, dst_dir) in common_dirs:
+        for src_dir, dst_dir in common_dirs:
             full_src_dir = temp_dir / src_dir
             val_dst_dir = PROCESSED_DATA_PATH / dst_dir
             test_dst_dir = PROCESSED_DATA_PATH / "test/none"
@@ -147,4 +161,6 @@ class DataDownloader:
 
         shutil.rmtree(temp_dir)
 
-        print(f"✅ Dataset '{NONE_DATASET}' downloaded to directory: {str(PROCESSED_DATA_PATH)}")
+        print(
+            f"✅ Dataset '{NONE_DATASET}' downloaded to directory: {str(PROCESSED_DATA_PATH)}"
+        )
