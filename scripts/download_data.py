@@ -80,7 +80,7 @@ class DataDownloader:
         number_of_images = len(
             [file for file in BABIES_DATA_PATH.iterdir() if file.is_file()]
         )
-        TRAIN_SIZE = int(number_of_images * 2 / 3)
+        TRAIN_SIZE = int(number_of_images * 0.78)
         TEST_SIZE = int((number_of_images - TRAIN_SIZE) / 2)
         for i, file in enumerate(BABIES_DATA_PATH.iterdir()):
             if i <= TRAIN_SIZE:

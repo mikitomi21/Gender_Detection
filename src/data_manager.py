@@ -68,3 +68,24 @@ class DataManager:
         image = Image.open(image_path)
         image_array = np.array(image)
         return image_array
+
+    @staticmethod
+    def get_all_images(class_type: ClassificationType) -> np.ndarray:
+        CLASS_DATA_PATH = Path(__file__).parent.parent / "data" / "processed"
+
+        TRAIN_PATH = CLASS_DATA_PATH / "train" / class_type.value
+        TEST_PATH = CLASS_DATA_PATH / "test" / class_type.value
+        VAL_PATH = CLASS_DATA_PATH / "val" / class_type.value
+
+        all_dirs = [TRAIN_PATH, TEST_PATH, VAL_PATH]
+
+        images = []
+        for dir in all_dirs:
+            for file in dir.iterdir():
+                # TODO to poprawic
+                if str(file).endswith(".gitkeep"):
+                    continue
+                image = Image.open(file)
+                images.append(np.array(image))
+
+        return np.array(images)
