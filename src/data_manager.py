@@ -8,13 +8,21 @@ from model.classification import ClassificationType, DatasetType
 
 class DataManager:
     @staticmethod
-    def count_number_of_images(class_type: ClassificationType):
+    def count_number_of_images(
+        class_type: ClassificationType, dataset_type: DatasetType = None
+    ):
         CLASS_DATA_PATH = Path(__file__).parent.parent / "data" / "processed"
-        TRAIN_PATH = CLASS_DATA_PATH / "train" / class_type.value
-        TEST_PATH = CLASS_DATA_PATH / "test" / class_type.value
-        VAL_PATH = CLASS_DATA_PATH / "val" / class_type.value
 
-        all_dirs = [TRAIN_PATH, TEST_PATH, VAL_PATH]
+        all_dirs = None
+        if dataset_type:
+            DATASET_TYPE = CLASS_DATA_PATH / dataset_type.value / class_type.value
+            all_dirs = [DATASET_TYPE]
+        else:
+            TRAIN_PATH = CLASS_DATA_PATH / "train" / class_type.value
+            TEST_PATH = CLASS_DATA_PATH / "test" / class_type.value
+            VAL_PATH = CLASS_DATA_PATH / "val" / class_type.value
+            all_dirs = [TRAIN_PATH, TEST_PATH, VAL_PATH]
+
         number_of_images = sum([1 for dir in all_dirs for file in dir.iterdir()])
 
         return number_of_images

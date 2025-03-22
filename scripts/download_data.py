@@ -6,6 +6,7 @@ import kaggle
 class DataDownloader:
     @staticmethod
     def download_data(skip_if_exists: bool = True):
+        # TODO wszedzie popieram .gitkeep
         DataDownloader._prepare_dirs()
         DataDownloader._download_babies_images(skip_if_exists)
         DataDownloader._download_genders_images(skip_if_exists)
