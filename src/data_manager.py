@@ -23,7 +23,13 @@ class DataManager:
             VAL_PATH = CLASS_DATA_PATH / "val" / class_type.value
             all_dirs = [TRAIN_PATH, TEST_PATH, VAL_PATH]
 
-        number_of_images = sum([1 for dir in all_dirs for file in dir.iterdir()])
+        number_of_images = sum(
+            [
+                1 and not str(file).endswith(".gitkeep")
+                for dir in all_dirs
+                for file in dir.iterdir()
+            ]
+        )
 
         return number_of_images
 

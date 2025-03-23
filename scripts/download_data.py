@@ -6,7 +6,6 @@ import kaggle
 class DataDownloader:
     @staticmethod
     def download_data(skip_if_exists: bool = True):
-        # TODO wszedzie popieram .gitkeep
         DataDownloader._prepare_dirs()
         DataDownloader._download_babies_images(skip_if_exists)
         DataDownloader._download_genders_images(skip_if_exists)
@@ -62,7 +61,8 @@ class DataDownloader:
         FACE_AGE_DATA_PATH = RAW_DATA_PATH / "face_age"
 
         if skip_if_exists and any(
-            file.is_file() for file in BABIES_DATA_PATH.iterdir()
+            file.is_file() and not str(file).endswith(".gitkeep")
+            for file in BABIES_DATA_PATH.iterdir()
         ):
             print(f"🙈 Dataset '{BABIES_DATASET}' is already downloaded.")
             return
@@ -102,7 +102,10 @@ class DataDownloader:
         PROCESSED_DATA_PATH = Path(__file__).parent.parent / "data" / "processed"
         TEST_MEN_PATH = PROCESSED_DATA_PATH / "test" / "men"
 
-        if skip_if_exists and any(file.is_file() for file in TEST_MEN_PATH.iterdir()):
+        if skip_if_exists and any(
+            file.is_file() and not str(file).endswith(".gitkeep")
+            for file in TEST_MEN_PATH.iterdir()
+        ):
             print(f"🙈 Dataset '{GENDERS_DATASET}' is already downloaded.")
             return
 
@@ -137,7 +140,10 @@ class DataDownloader:
         PROCESSED_DATA_PATH = Path(__file__).parent.parent / "data" / "processed"
         TEST_NONE_PATH = PROCESSED_DATA_PATH / "test" / "none"
 
-        if skip_if_exists and any(file.is_file() for file in TEST_NONE_PATH.iterdir()):
+        if skip_if_exists and any(
+            file.is_file() and not str(file).endswith(".gitkeep")
+            for file in TEST_NONE_PATH.iterdir()
+        ):
             print(f"🙈 Dataset '{NONE_DATASET}' is already downloaded.")
             return
 
