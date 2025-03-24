@@ -3,7 +3,11 @@ from PIL import Image
 import numpy as np
 import random
 
+import torch
+from torchvision import transforms
+
 from model.classification import ClassificationType, DatasetType
+from model.image_dataset import ImageDataset
 
 
 class DataManager:
@@ -88,10 +92,45 @@ class DataManager:
         images = []
         for dir in all_dirs:
             for file in dir.iterdir():
-                # TODO to poprawic
                 if str(file).endswith(".gitkeep"):
                     continue
                 image = Image.open(file)
                 images.append(np.array(image))
 
         return np.array(images)
+
+    @staticmethod
+    def calculate_mean_std():
+        CLASS_DATA_PATH = Path(__file__).parent.parent / "data" / "processed"
+
+        TRAIN_PATH = CLASS_DATA_PATH / "train"
+        TEST_PATH = CLASS_DATA_PATH / "test"
+        VAL_PATH = CLASS_DATA_PATH / "val"
+
+        pre_transform = transforms.Compose(
+            [
+                transforms.ToTensor(),
+            ]
+        )
+
+        train_dataset = ImageDataset(TRAIN_PATH, pre_transform)
+        test_dataset = ImageDataset(TEST_PATH, pre_transform)
+        val_dataset = ImageDataset(VAL_PATH, pre_transform)
+
+        full_dataset = torch.utils.data.ConcatDataset(
+            [train_dataset, test_dataset, val_dataset]
+        )
+
+        mean = torch.zeros(3)
+        std = torch.zeros(3)
+        num_samples = len(full_dataset)
+
+        for img, _ in full_dataset:
+            mean += img.mean(dim=(1, 2))
+        mean /= num_samples
+
+        for img, _ in full_dataset:
+            std += ((img - mean.view(3, 1, 1)) ** 2).mean(dim=(1, 2))
+        std = torch.sqrt(std / num_samples)
+
+        return mean.tolist(), std.tolist()
