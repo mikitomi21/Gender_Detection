@@ -29,7 +29,7 @@ class ImageDataset(Dataset):
 
     def __getitem__(self, idx):
         img_path, label = self.images[idx]
-        image = Image.open(img_path).convert("RGB")  # po co?
+        image = Image.open(img_path).convert("RGB")
         if self.transform:
             image = self.transform(image)
         return image, label
