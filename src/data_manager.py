@@ -104,8 +104,6 @@ class DataManager:
         CLASS_DATA_PATH = Path(__file__).parent.parent / "data" / "processed"
 
         TRAIN_PATH = CLASS_DATA_PATH / "train"
-        TEST_PATH = CLASS_DATA_PATH / "test"
-        VAL_PATH = CLASS_DATA_PATH / "val"
 
         pre_transform = transforms.Compose(
             [
@@ -114,12 +112,8 @@ class DataManager:
         )
 
         train_dataset = ImageDataset(TRAIN_PATH, pre_transform)
-        test_dataset = ImageDataset(TEST_PATH, pre_transform)
-        val_dataset = ImageDataset(VAL_PATH, pre_transform)
 
-        full_dataset = torch.utils.data.ConcatDataset(
-            [train_dataset, test_dataset, val_dataset]
-        )
+        full_dataset = torch.utils.data.ConcatDataset([train_dataset])
 
         mean = torch.zeros(3)
         std = torch.zeros(3)
